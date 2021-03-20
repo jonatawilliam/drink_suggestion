@@ -830,3 +830,4 @@
 2021/03/20 20:19:35 [info] 8#8: *43 client closed connection while waiting for request, client: 192.168.160.1, server: 0.0.0.0:80
 2021/03/20 20:23:00 [info] 8#8: *2 client 192.168.160.1 closed keepalive connection
 2021/03/20 20:24:37 [info] 8#8: *44 client closed connection while waiting for request, client: 192.168.160.1, server: 0.0.0.0:80
+2021/03/20 20:29:39 [info] 8#8: *45 client closed connection while waiting for request, client: 192.168.160.1, server: 0.0.0.0:80
