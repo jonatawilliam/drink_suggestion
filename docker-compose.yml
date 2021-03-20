@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  drink-suggestion:
+    restart: unless-stopped
+    build:
+      context: project
+      dockerfile: Dockerfile
+    image: jonatawilliam/drink-suggestion
+    working_dir: /app
+    env_file:
+      - ./env/rails_env
+    volumes:
+      - ./project:/app
+    ports:
+      - 3000
+    links:
+      - postgresql
+    depends_on:
+      - postgresql
+    healthcheck:
+      test: wget -q -T 90 -O /dev/null http://0.0.0.0:3000/ || exit 1
+      interval: 5m
+      timeout: 30s
+    tty: true
+    stdin_open: true
+    environment:
+      RUBYOPT: "-W:no-deprecated -W:no-experimental"
+
+  postgresql:
+    image: postgis/postgis:12-master
+    ports:
+      - 5432
+    env_file: env/rails_env
+    volumes:
+      - postgresql_data_drink_suggestion:/var/lib/postgresql/data
+
+  nginx:
+    restart: unless-stopped
+    image: nginx:1.15.9-alpine
+    ports:
+      - 80:80
+    networks:
+      default:
+        aliases:
+          - localhost
+    volumes:
+      - ./conf/nginx/log:/var/log/nginx
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./conf/nginx/bots.d:/etc/nginx/bots.d
+      - ./conf/nginx/conf.d/fastcgi.conf:/etc/nginx/conf.d/fastcgi.conf
+      - ./conf/nginx/conf.d/gzip.conf:/etc/nginx/conf.d/gzip.conf
+      - ./conf/nginx/conf.d/drink-suggestion-common:/etc/nginx/conf.d/drink-suggestion-common
+      - ./conf/nginx/conf.d/redirects.conf:/etc/nginx/conf.d/redirects.conf
+      - ./conf/nginx/conf.d/sites/localhost:/etc/nginx/conf.d/sites/localhost
+    command: [nginx-debug, '-g', 'daemon off;']
+    depends_on:
+      - drink-suggestion
+    links:
+      - drink-suggestion
+  
+volumes:
+  postgresql_data_drink_suggestion:

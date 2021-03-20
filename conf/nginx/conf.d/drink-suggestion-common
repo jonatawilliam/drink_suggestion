@@ -1,0 +1,53 @@
+include /etc/nginx/bots.d/blockbots.conf;
+include /etc/nginx/bots.d/ddos.conf;
+
+auth_basic $auth_type;
+auth_basic_user_file /etc/nginx/conf.d/htpasswd;
+
+client_body_timeout 10m;
+client_header_timeout 10m;
+client_max_body_size 64M;
+keepalive_timeout 10m;
+lingering_time 10m;
+lingering_timeout 10m;
+proxy_connect_timeout 10m;
+proxy_read_timeout 10m;
+proxy_send_timeout 10m;
+send_timeout 10m;
+sendfile_max_chunk 2M;
+
+index index.php index.html index.htm;
+
+include /etc/nginx/conf.d/redirects.conf;
+
+location / {
+  auth_basic "off";
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Host $http_host;
+  proxy_redirect   off;
+  proxy_pass      http://drink-suggestion;
+}
+
+location ~* ^/(assets|system|uploads)/ {
+  auth_basic "off";
+
+  root /drink-suggestion;
+  gzip_static on;
+  expires max;
+  add_header Cache-Control public;
+  try_files $uri $uri/ @drink-suggestion;
+  log_not_found off;
+}
+
+location ~ /\. {
+  deny all;
+}
+
+location @drink-suggestion {
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Host $http_host;
+  proxy_redirect   off;
+  proxy_pass       http://drink-suggestion;
+}
+
+error_page 500 502 503 504 /500.html;

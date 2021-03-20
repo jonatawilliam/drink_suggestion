@@ -1,0 +1,6 @@
+RAILS_ENV=development
+POSTGRES_DB=drink_suggestion
+POSTGRES_HOST=postgresql
+POSTGRES_PORT=5432
+POSTGRES_PASSWORD=drink_user
+POSTGRES_USER=drink_passwd
