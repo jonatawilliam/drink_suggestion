@@ -4,8 +4,6 @@
 
 Executing to Jonata William
 
-[Demo](https://zygo-test-jonatawilliam.herokuapp.com)
-
 ### Introdução
 
 A aplicação web Drink Suggestion é voltada a recomendar drinks ao usuário baseado em dados
